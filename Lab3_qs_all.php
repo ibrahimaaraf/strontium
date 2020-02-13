@@ -1,7 +1,4 @@
 <html>
-<head>
-<title>InformationForm</title>
-</head>
 <body>  
 
 <?php
@@ -10,12 +7,10 @@ class InformationForm
   
   public $name;
   public $gender;
-  public $bloodGrp;
   public $degree;
   public $email;
-  public $date;
   
-   function __construct($name,$email,$date,$gender,$degree,$bloodGrp) 
+   function __construct($name,$email,$gender) 
    {
 	   
     $this->name = $name;
@@ -23,12 +18,6 @@ class InformationForm
 	$this->email = $email;
 	
 	$this->gender = $gender;
-	
-    $this->bloodGrp = $bloodGrp;
-	
-	$this->degree = $degree;
-	
-	$this->date = $date;
 	
    }
   
@@ -59,37 +48,13 @@ class InformationForm
   {
     return $this->gender;
   }
-  function set_bloodGrp($bloodGrp)
-  {
-    $this->bloodGrp = $bloodGrp;
-  }
-  function get_bloodGrp() 
-  {
-    return $this->bloodGrp;
-  }
-  function set_degree($degree)
-  {
-    $this->degree = $degree;
-  }
-  function get_degree()
-  {
-    return $this->degree;
-  }
-  function set_date($date)
-  {
-    $this->date = $date;
-  }
-  function get_date()
-  {
-    return $this->date;
-  }
   
 }
 ?>
 
 <?php
-$nameError=$emailError=$genderError=$degreeError=$bloodGrpError=$dateError=" ";
-$name = $email = $gender = $degree = $date = $bloodGrp="";
+$nameError=$emailError=$genderError=" ";
+$name = $email = $gender ="";
 
 if($_SERVER["REQUEST_METHOD"]=="POST")
 {
@@ -109,30 +74,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
 	{
 		$email=$_POST["email"];
 	}
-	if (empty($_POST["degree"]))
-	{
-		$degreeError=" Please enter your degree";
-	}
-	else
-	{
-		$degree=$_POST["degree"];
-	}
-	if (empty($_POST["bloodGrp"]))
-	{
-		$bloodGrpError=" Please enter your bloodGrp";
-	}
-	else
-	{
-		$bloodGrp=$_POST["bloodGrp"];
-	}
-	if (empty($_POST["dt1"]) || empty($_POST["dt2"])|| empty($_POST["dt3"]))
-	{
-		$dateError = "Date is required";
-	}	 
-	else 
-	{
-		$date = $_POST["dt1"]."/".$_POST["dt2"]."/".$_POST["dt3"];
-	}
+	
 	if (empty($_POST["gender"]))
 	{
 		$genderError=" Please enter your Gender";
@@ -141,6 +83,17 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
 	{
 		$gender=$_POST["gender"];
 	}
+	/*if (empty($_POST["name"]) || ($_POST["email"]) || ($_POST["gender"]))
+	{
+		$nameError=$emailError=$genderError="Fill the requirements ";
+	}
+	else
+	{
+			$name=$_POST["name"];
+			$email=$_POST["email"];
+			$gender=$_POST["gender"];
+	}
+	*/
 }
 
 ?>
@@ -154,10 +107,6 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
   E-mail: <input type="text" name="email">
   <span class="error">* <?php echo $emailError;?></span>
   <br><br>
-  Date: <input type="text" name="dt1">/day <input type="text" name="dt2"> /month <input type="text" name="dt3"> /year
-  <span class="error">*<?php echo $dateError;?></span>
-  <br><br>
-
   Gender:
   <input type="radio" name="gender" value="female">Female
   <input type="radio" name="gender" value="male">Male
@@ -165,33 +114,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
   
   <span class="error">* <?php echo $genderError;?></span>
   <br><br>
-   Degree:
-  <input type="checkbox" name="degree" value="Bsc.">Bsc.
-  <input type="checkbox" name="degree" value="SSC">SSC
-  <input type="checkbox" name="degree" value="HSC">HSC
-  <input type="checkbox" name="degree" value="Phd">Phd.
-  
-  <span class="error">* <?php echo $degreeError;?></span>
-  <br><br>
-  
-   BloodGroup:
-   <select name="bloodGrp">
-   <option value="Select">Select</option>
-  <option value="A+">A+</option>
-  <option value="B+">B+</option>
-  <option value="AB+">AB+</option>
-  <option value="O+">O+</option>
-  <option value="A-">A-</option>
-  <option value="B-">B-</option>
-  <option value="AB-">AB-</option>
-  <option value="O-">O-</option>
-  </select>
-  
-  
-  <span class="error">* <?php echo $bloodGrpError;?></span>
-  <br><br>
-  
-  
+   
   <input type="submit" name="submit" value="Submit">  
 </form>
 
@@ -199,7 +122,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
 
 echo "<h2>"." data for : ".$name.":</h2>";
 
-$info = new InformationForm($name,$email,$date,$gender,$degree,$bloodGrp);
+$info = new InformationForm($name,$email,$gender);
 
 echo $info->get_name();
 
@@ -209,19 +132,68 @@ echo $info->get_email();
 
 echo "<br>";
 
-echo $info->get_date();
-
-echo "<br>";
-
-echo $info->get_degree();
-
-echo "<br>";
-
 echo $info->get_gender();
 
 echo "<br>";
 
-echo $info->get_bloodGrp();
+?>
+
+<?php
+
+$file = fopen("User Info.txt", "a") or die("Unable to open the file!");
+
+$data = $info->get_name()."\t";
+
+fwrite($file, $data);
+
+$data = $info->get_email()."\t";
+
+fwrite($file, $data);
+
+$data = $info->get_gender()."\n";
+
+fwrite($file,$data);
+
+fclose($file);
+
+
+?>
+
+<?php
+
+  $dom = new DOMDocument();
+
+    $dom->encoding = 'utf-8';
+
+    $dom->xmlVersion = '1.0';
+
+    $dom->formatOutput = true;
+
+  $xml_file_name = 'Aaraf.xml';
+
+    $root = $dom->createElement('Info');
+
+    $root_node = $dom->createElement('root');
+
+  $child_node_title = $dom->createElement('name', $info->get_name());
+
+    $root_node->appendChild($child_node_title);
+
+    $child_node_year = $dom->createElement('email', $info->get_email());
+
+    $root_node->appendChild($child_node_year);
+
+  $child_node_genre = $dom->createElement('gender', $info->get_gender());
+
+    $root_node->appendChild($child_node_genre);
+
+   
+    $root->appendChild($root_node);
+
+    $dom->appendChild($root);
+
+  $dom->save($xml_file_name);
+   
 ?>
 
 </body>
